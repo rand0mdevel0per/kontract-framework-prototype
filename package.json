@@ -1,5 +1,5 @@
 {
-  "name": "kontract",
+  "name": "konstract",
   "version": "0.1.0",
   "private": true,
   "description": "Kontract framework prototype with tests and CI",
@@ -9,7 +9,10 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint . --ext .ts",
-    "test": "vitest --coverage --run"
+    "test": "vitest --coverage --run",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
@@ -23,6 +26,7 @@
     "c8": "^9.1.0",
     "eslint": "^8.57.0",
     "typescript": "^5.4.0",
+    "vitepress": "^1.0.4",
     "vitest": "^1.5.0"
   }
 }
