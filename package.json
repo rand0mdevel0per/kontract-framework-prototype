@@ -1,0 +1,24 @@
+{
+  "name": "kontract",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kontract framework prototype with tests and CI",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --ext .ts",
+    "test": "vitest --coverage --run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "@vitest/coverage-v8": "^1.6.1",
+    "c8": "^9.1.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.5.0"
+  }
+}
