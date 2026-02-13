@@ -14,6 +14,30 @@ Runtime ── Middleware ── @backend Routes
 Storage Proxy (ptr) ── MVCC ── Database
 ```
 
+## Request Flow
+
+```
+Client Call
+  │
+  ▼
+RPC Stub (__kontract_rpc)
+  │
+  ▼
+Route Map (@backend meta)
+  │
+  ▼
+Middleware Filter
+  │
+  ▼
+Handler Execution
+  │
+  ▼
+Storage Proxy → MVCC → Database
+  │
+  ▼
+SSE Event Emit
+```
+
 ## Core Concepts
 
 - Minimal privilege: Storage access is gated by ptr resolution and MVCC rules

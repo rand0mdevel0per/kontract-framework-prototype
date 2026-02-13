@@ -46,6 +46,22 @@ Permissions use a bitmask to guard storage operations. A typical pattern is:
 
 Use perm in the session context and @backend meta to align authorization.
 
+## Environment Matrix
+
+| Environment | Node.js | npm | Database | Notes |
+| --- | --- | --- | --- | --- |
+| Local development | 20+ | 9+ | PostgreSQL compatible | Use docs:dev for preview |
+| CI | 20+ | 9+ | PostgreSQL compatible | Lint, typecheck, test with coverage |
+| Cloudflare Pages | 20+ | 9+ | Not required | Build only, no runtime DB |
+| Production runtime | 20+ | 9+ | PostgreSQL compatible | Ensure storage/transactions tables exist |
+
+## Configuration Checklist
+
+- ctx includes sid, owner, currentTxid, perm
+- storage registry is populated for each logical table
+- transactions table exists and records txid
+- permissions align between session and @backend meta
+
 ## Scripts
 
 | Script | Purpose |

@@ -9,6 +9,7 @@ Ensure all branches remain above the configured threshold. Add tests for additio
 - Build command: npm run docs:build
 - Output directory: docs/.vitepress/dist
 - Node version: 20+
+ - Wrangler project name matches Cloudflare Pages project
 
 ## Decorators parsing errors
 
@@ -39,3 +40,11 @@ Ensure the emitter uses the expected payload shape:
 - data
 
 Check that events are flushed to the client and the connection is not closed prematurely.
+
+## Deployment fails with wrangler
+
+Check:
+
+- wrangler is installed or invoked via npx
+- project name matches the Cloudflare Pages project
+- build output directory exists

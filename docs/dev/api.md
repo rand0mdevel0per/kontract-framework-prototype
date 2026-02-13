@@ -128,3 +128,17 @@ Fields:
 - type: insert | update | delete | custom
 - id: entity id
 - data: payload object
+
+## Error Codes
+
+| Code | Meaning | Typical Cause | Resolution |
+| --- | --- | --- | --- |
+| KONTRACT_CTX_MISSING | Required context fields are missing | ctx is undefined or incomplete | Provide sid, owner, currentTxid, perm |
+| KONTRACT_STORAGE_PTR_NOT_FOUND | Storage ptr resolution failed | storage table missing mapping | Ensure storage registry row exists |
+| KONTRACT_EXEC_CROSS_TABLE | Cross‑table SQL blocked | exec contains other table names | Restrict exec to current table |
+| KONTRACT_PERMISSION_DENIED | Permission bitmask rejected | perm lacks required bits | Align perm and @backend meta |
+| KONTRACT_TXID_INVALID | txid is missing or invalid | currentTxid not set or not increasing | Set currentTxid from session |
+| KONTRACT_DECORATOR_PARSE_FAILED | @backend parse failed | decorator syntax not supported | Enable decorators and TypeScript parser |
+| KONTRACT_CRYPTO_UNSUPPORTED | Crypto algorithm unavailable | missing OpenSSL features | Prefer chacha20 or fallback to AES |
+| KONTRACT_DECRYPT_FAILED | Ciphertext verification failed | wrong key/nonce/tag | Ensure key and nonce are correct |
+| KONTRACT_EVENT_FORMAT_INVALID | SSE payload invalid | missing type/id/data | Emit payload with required fields |

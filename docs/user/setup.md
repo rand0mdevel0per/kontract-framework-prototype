@@ -39,3 +39,11 @@ Output directory: docs/.vitepress/dist
 npm run docs:build
 npx wrangler pages deploy docs/.vitepress/dist --project-name konstract
 ```
+
+## Deployment Checklist
+
+- Node.js 20+ in build environment
+- npm 9+ available
+- Build command set to npm run docs:build
+- Output directory set to docs/.vitepress/dist
+- Wrangler project name matches Cloudflare Pages project
