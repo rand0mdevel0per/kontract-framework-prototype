@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="k" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+    <linearGradient id="fold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background: rounded square -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg)"/>
+
+  <!-- Contract page fold (top-right corner) -->
+  <path d="M400 16 L400 96 Q400 112 416 112 L496 112" fill="none" stroke="url(#fold)" stroke-width="2"/>
+  <path d="M400 16 L400 96 Q400 112 416 112 L496 112 L496 112 Z" fill="url(#fold)" opacity="0.5"/>
+
+  <!-- Subtle grid lines (contract/document lines) -->
+  <line x1="100" y1="400" x2="260" y2="400" stroke="#38bdf8" stroke-opacity="0.12" stroke-width="3" stroke-linecap="round"/>
+  <line x1="100" y1="424" x2="220" y2="424" stroke="#38bdf8" stroke-opacity="0.08" stroke-width="3" stroke-linecap="round"/>
+  <line x1="100" y1="448" x2="180" y2="448" stroke="#38bdf8" stroke-opacity="0.05" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- The "K" letterform - geometric, angular -->
+  <!-- Vertical stroke -->
+  <rect x="120" y="100" width="52" height="280" rx="8" fill="url(#k)"/>
+
+  <!-- Upper diagonal (K arm) -->
+  <polygon points="172,240 340,100 396,100 396,120 196,260" fill="url(#k)"/>
+  <!-- Clean upper arm -->
+  <path d="M172 220 L172 260 L196 260 L380 108 L380 100 L340 100 Z" fill="url(#k)"/>
+
+  <!-- Lower diagonal (K leg) - extends further -->
+  <path d="M172 260 L172 300 L196 260 L390 380 L390 340 Z" fill="url(#accent)"/>
+  <rect x="356" y="330" width="52" height="52" rx="8" fill="url(#accent)" transform="rotate(-5, 382, 356)"/>
+
+  <!-- Small decorative nodes (distributed/serverless) -->
+  <circle cx="396" cy="108" r="10" fill="#38bdf8" opacity="0.6"/>
+  <circle cx="400" cy="370" r="10" fill="#c084fc" opacity="0.6"/>
+
+  <!-- Connection dots pattern (subtle) -->
+  <circle cx="320" cy="180" r="3" fill="#38bdf8" opacity="0.2"/>
+  <circle cx="350" cy="210" r="3" fill="#818cf8" opacity="0.2"/>
+  <circle cx="290" cy="320" r="3" fill="#818cf8" opacity="0.2"/>
+  <circle cx="320" cy="350" r="3" fill="#c084fc" opacity="0.2"/>
+</svg>
