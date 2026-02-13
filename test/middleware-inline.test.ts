@@ -40,4 +40,14 @@ describe('middleware inline', () => {
     const f = filterApplicable(mw, '/api/users', 'v1', 'getUser');
     expect(f.length).toBe(1);
   });
+
+  it('excludes endpoint-filtered middleware when no endpoint provided', () => {
+    const mw: Middleware[] = [
+      { fn: async () => {}, filter: { endpoints: ['getUser'] } },
+      { fn: async () => {} },
+    ];
+    const f = filterApplicable(mw, '/api/users', 'v1');
+    expect(f.length).toBe(1);
+    expect(f[0].filter).toBeUndefined();
+  });
 });

@@ -8,7 +8,7 @@
 ## Clone and Install
 
 ```bash
-git clone https://github.com/kontract-framework/kontract.git
+git clone https://github.com/rand0mdevel0per/kontract.git
 cd kontract
 npm install
 ```

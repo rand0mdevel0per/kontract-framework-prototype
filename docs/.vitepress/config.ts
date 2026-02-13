@@ -40,7 +40,7 @@ export default defineConfig({
       ]
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/kontract-framework/kontract' }
+      { icon: 'github', link: 'https://github.com/rand0mdevel0per/kontract' }
     ]
   }
 });

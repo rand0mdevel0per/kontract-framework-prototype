@@ -15,7 +15,7 @@ export function filterApplicable(mw: Middleware[], path: string, egroup?: string
     if (!f) return true;
     if (f.prefixurl && !path.startsWith(f.prefixurl)) return false;
     if (f.egroup && f.egroup !== egroup) return false;
-    if (f.endpoints && endpoint && !f.endpoints.includes(endpoint)) return false;
+    if (f.endpoints && (!endpoint || !f.endpoints.includes(endpoint))) return false;
     return true;
   });
 }
