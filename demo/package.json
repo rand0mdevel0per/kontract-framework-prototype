@@ -1,0 +1,19 @@
+{
+  "name": "kontract-demo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "psql $DATABASE_URL -f sql/init.sql",
+    "db:seed": "psql $DATABASE_URL -f sql/seed.sql"
+  },
+  "dependencies": {
+    "kontract": "file:.."
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.0",
+    "wrangler": "^3.100.0"
+  }
+}
