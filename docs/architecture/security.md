@@ -185,3 +185,51 @@ await proxy.exec('SELECT * FROM users JOIN orders ON ...', []);
 | Malicious tenant | Cannot access other tenants' data (ptr isolation) |
 | Compromised gateway | Limited blast radius (per-tenant ptr isolation) |
 | SQL injection | Parameterized queries + identifier sanitization |
+| Stolen JWT | Short TTL + refresh rotation, HMAC-SHA256 signature |
+| Brute-force password | PBKDF2 with 100,000 iterations (computational cost) |
+| Token tampering | HMAC-SHA256 signature verification on every request |
+
+## Authentication & Session Security
+
+### JWT Tokens
+
+- **Algorithm**: HMAC-SHA256 via `crypto.subtle` (Web Crypto API, zero external dependencies)
+- **Format**: standard 3-part JWT (`header.payload.signature`)
+- **Payload**: `sid`, `owner`, `isAnonymous`, `ugroups`, `iat`, `exp`
+- **Expiry**: configurable TTL (default 3600s), verified on every request
+- **Signing key**: `KONTRACT_SECRET` environment variable
+
+### Password Hashing
+
+- **Algorithm**: PBKDF2 via `crypto.subtle`
+- **Iterations**: 100,000
+- **Hash**: SHA-256
+- **Salt**: 16 random bytes per password (via `crypto.getRandomValues`)
+- **Storage format**: `<salt_hex>:<hash_hex>`
+
+### Session Flow
+
+```
+Client                         Gateway
+  |                              |
+  |--- POST /auth/login ------→ |
+  |    {email, password}         |
+  |                              | PBKDF2 verify
+  |                              | signJwt(payload, secret, ttl)
+  |←-- {token, owner} ----------|
+  |                              |
+  |--- GET /api/data -----------→|
+  |    Authorization: Bearer JWT |
+  |                              | verifyJwt(token, secret)
+  |                              | populate ctx.owner, ctx.ugroups
+  |                              | dispatch to @backend handler
+  |←-- response ---------------→|
+```
+
+### Auth Middleware Chain
+
+1. `authMiddleware(config)` — extracts Bearer token, verifies JWT, populates `ctx`
+2. `requireAuth()` — rejects anonymous users (401)
+3. `requireGroup(ugroup)` — rejects users not in the specified group (403)
+
+All three produce standard `Middleware` objects compatible with `filterApplicable` and `inlineMiddlewareChain`.

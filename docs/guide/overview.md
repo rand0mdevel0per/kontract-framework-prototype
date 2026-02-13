@@ -53,12 +53,17 @@ Kontract is a serverless full-stack TypeScript framework that follows the princi
 | DB privileges | 2 tables | Full DB | Managed | Full DB |
 | Code colocation | Single codebase | Separate | Limited | Separate |
 | E2E encryption | raystream | TLS only | TLS only | TLS only |
-| Cold start | <10ms | 100ms+ | <50ms | 500ms+ |
+| Cold start | <10ms (lazy) | 100ms+ | <50ms | 500ms+ |
 | Multi-tenancy | ptr isolation | RLS | Manual | Manual |
+| Built-in auth | JWT + anon-first | Yes | Yes | No |
+| API doc gen | Cookbook compiler | Dashboard | No | No |
 
 ## Continue Reading
 
+- [Authentication](/guide/authentication) - anonymous-first auth, JWT sessions, account linking
+- [Cookbook](/guide/cookbook) - API doc generation from doc comments
+- [Lazy Loading](/guide/lazy-loading) - cold-start optimized route loading
 - [Runtime](/architecture/runtime) - SessionDO, MVCC, Storage Proxy
-- [Compiler](/architecture/compiler) - build pipeline and decorators
+- [Compiler](/architecture/compiler) - build pipeline, decorators, cookbook extraction
 - [Storage & Migrations](/architecture/storage) - schema generation
-- [Security](/architecture/security) - raystream and permissions
+- [Security](/architecture/security) - raystream, permissions, and auth security

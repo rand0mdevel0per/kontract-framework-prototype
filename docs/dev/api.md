@@ -260,3 +260,168 @@ function generateSQLAddField(ptr: string, field: string, fieldType: string): str
 | `KONTRACT_DECORATOR_PARSE_FAILED` | `@backend` parse failed | Enable decorators plugin |
 | `KONTRACT_CRYPTO_UNSUPPORTED` | Crypto algorithm unavailable | Check OpenSSL build |
 | `KONTRACT_DECRYPT_FAILED` | Ciphertext verification failed | Verify key, nonce, and tag |
+
+## Authentication
+
+### Types
+
+```ts
+interface AuthUser {
+  id: string;
+  email?: string;
+  passwordHash?: string;
+  isAnonymous: boolean;
+  ugroups: string[];
+  createdAt: string;
+  lastLoginAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface AuthSession {
+  sid: string;
+  owner: string;
+  isAnonymous: boolean;
+  ugroups: string[];
+  iat: number;
+  exp: number;
+}
+
+interface AuthProvider {
+  name: string;
+  authenticate(credentials: Record<string, string>): Promise<{ owner: string; user: Partial<AuthUser> }>;
+}
+
+interface AuthConfig {
+  secret: string;
+  sessionTtlSeconds: number;
+  allowAnonymous: boolean;
+  providers: AuthProvider[];
+}
+```
+
+### JWT
+
+```ts
+function signJwt(payload: Omit<AuthSession, 'iat' | 'exp'>, secret: string, expiresInSeconds: number): Promise<string>;
+function verifyJwt(token: string, secret: string): Promise<AuthSession>;
+```
+
+### Providers
+
+```ts
+class AnonymousProvider implements AuthProvider {
+  name: 'anonymous';
+  authenticate(credentials: Record<string, string>): Promise<{ owner: string; user: Partial<AuthUser> }>;
+}
+
+class PasswordProvider implements AuthProvider {
+  name: 'password';
+  constructor(lookupByEmail: (email: string) => Promise<AuthUser | null>);
+  authenticate(credentials: Record<string, string>): Promise<{ owner: string; user: Partial<AuthUser> }>;
+}
+
+function createPasswordHash(password: string): Promise<string>;
+function verifyPasswordHash(password: string, stored: string): Promise<boolean>;
+```
+
+### Session
+
+```ts
+function createSession(owner: string, config: AuthConfig, userInfo: { isAnonymous: boolean; ugroups: string[] }): Promise<string>;
+function verifySession(token: string, config: AuthConfig): Promise<AuthSession>;
+function refreshSession(token: string, config: AuthConfig): Promise<string>;
+```
+
+### User CRUD
+
+```ts
+function createUser(pg: PGClient, user: AuthUser): Promise<void>;
+function getUser(pg: PGClient, owner: string): Promise<AuthUser | null>;
+function getUserByEmail(pg: PGClient, email: string): Promise<AuthUser | null>;
+function linkAccount(pg: PGClient, owner: string, email: string, passwordHash: string): Promise<AuthUser>;
+function deleteUser(pg: PGClient, owner: string, txid: bigint): Promise<boolean>;
+```
+
+### Auth Middleware
+
+```ts
+function authMiddleware(config: AuthConfig): Middleware;
+function requireAuth(): Middleware;
+function requireGroup(ugroup: string): Middleware;
+```
+
+### Auth Router
+
+```ts
+interface AuthRouterDeps {
+  pg: PGClient;
+  config: AuthConfig;
+}
+
+type AuthRequest = {
+  method: string;
+  path: string;
+  body?: Record<string, string>;
+  headers?: Record<string, string>;
+};
+
+function handleAuthRoute(req: AuthRequest, deps: AuthRouterDeps): Promise<HttpResp<unknown>>;
+```
+
+Routes: `POST /auth/anonymous`, `POST /auth/register`, `POST /auth/login`, `POST /auth/link`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`.
+
+## Cookbook (API Doc Generation)
+
+### Types
+
+```ts
+interface ParamInfo {
+  name: string;
+  type: string;
+  optional: boolean;
+}
+
+interface CookbookEntry {
+  name: string;
+  description: string;
+  params: ParamInfo[];
+  returnType: string;
+  meta: Record<string, unknown>;
+  sourcePath: string;
+}
+
+interface CookbookOutput {
+  entries: CookbookEntry[];
+  generatedAt: string;
+}
+```
+
+### Functions
+
+```ts
+function extractDocComment(source: string, fnName: string): string;
+function extractParamTypes(source: string, fnName: string): ParamInfo[];
+function extractReturnType(source: string, fnName: string): string;
+function generateCookbook(sources: { path: string; content: string; routes: Array<{ name: string; meta: Record<string, unknown> }> }[]): CookbookOutput;
+function cookbookToVitepress(cookbook: CookbookOutput): Map<string, string>;
+```
+
+## Lazy Route Loading
+
+### Types
+
+```ts
+interface LazyRouteEntry {
+  name: string;
+  modulePath: string;
+  meta: Record<string, unknown>;
+}
+```
+
+### Functions
+
+```ts
+function generateLazyRoutes(entries: LazyRouteEntry[]): string;
+```
+
+Generates code containing `__kontract_loaders` (Map of lazy import functions), `__kontract_routes` (Map of cached handlers), and `__kontract_resolve(name)` (async resolver with caching).

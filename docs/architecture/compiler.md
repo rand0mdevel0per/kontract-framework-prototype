@@ -11,7 +11,11 @@ ESLint Analysis (type extraction)
     ↓
 Babel Transform (@backend extraction)
     ↓
+Cookbook Extraction (doc comments + types → API docs)
+    ↓
 Middleware Inlining (next() replacement)
+    ↓
+Lazy Route Generation (optional: dynamic import() loaders)
     ↓
 SWC Optimization (O3 passes)
     ↓
@@ -140,6 +144,52 @@ interface FileEntry {
 ```
 
 Only changed files and their dependents are recompiled.
+
+## Cookbook Extraction
+
+The cookbook compiler runs during the Babel transform phase, extracting documentation from `@backend` functions:
+
+1. **Doc comments**: `///` (Rust-style triple-slash) and `/** */` (JSDoc) blocks above the function are parsed into markdown
+2. **Parameter types**: extracted from function signatures (name, type, optional flag)
+3. **Return type**: extracted from the return type annotation
+
+Output is a `CookbookOutput` containing `CookbookEntry[]`, which can be converted to VitePress markdown pages via `cookbookToVitepress()`.
+
+```ts
+import { generateCookbook, cookbookToVitepress } from 'kontract';
+
+const cookbook = generateCookbook(sources);
+const pages = cookbookToVitepress(cookbook);
+// pages.get('index.md')      → API index
+// pages.get('createUser.md') → per-function page
+```
+
+See the [Cookbook guide](/guide/cookbook) for doc comment syntax and generated output structure.
+
+## Lazy Route Loading
+
+When `lazy` mode is enabled, the server bundle uses dynamic `import()` instead of eager route registration:
+
+```ts
+// Eager (default)
+__kontract_routes.set('createUser', handler);
+
+// Lazy
+__kontract_loaders.set('createUser', () => import('./api/users.js').then(m => m.createUser));
+```
+
+The gateway calls `__kontract_resolve(fnName)` which triggers the import on first call and caches the handler for subsequent calls. This reduces cold-start latency in serverless environments with many routes.
+
+```ts
+import { generateLazyRoutes, LazyRouteEntry } from 'kontract';
+
+const entries: LazyRouteEntry[] = [
+  { name: 'createUser', modulePath: './api/users.js', meta: { egroup: 'api-v1' } },
+];
+const code = generateLazyRoutes(entries);
+```
+
+See the [Lazy Loading guide](/guide/lazy-loading) for when to use lazy vs eager loading.
 
 ## StorageRegistry Generation
 

@@ -17,6 +17,9 @@ export default defineConfig({
       '/guide/': [
         { text: 'Overview', link: '/guide/overview' },
         { text: 'Quickstart', link: '/guide/quickstart' },
+        { text: 'Authentication', link: '/guide/authentication' },
+        { text: 'Cookbook', link: '/guide/cookbook' },
+        { text: 'Lazy Loading', link: '/guide/lazy-loading' },
         { text: 'Deployment', link: '/guide/deployment' }
       ],
       '/architecture/': [
@@ -30,6 +33,7 @@ export default defineConfig({
         { text: 'Installation', link: '/dev/installation' },
         { text: 'Configuration', link: '/dev/configuration' },
         { text: 'API Reference', link: '/dev/api' },
+        { text: 'Roadmap', link: '/dev/roadmap' },
         { text: 'Contributing', link: '/dev/contributing' }
       ],
       '/user/': [

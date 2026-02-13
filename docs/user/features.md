@@ -109,6 +109,66 @@ interface User {
 }
 ```
 
+## Authentication
+
+Built-in auth system with an anonymous-first pattern:
+
+```ts
+import { AuthConfig, AnonymousProvider, PasswordProvider } from 'kontract';
+
+const authConfig: AuthConfig = {
+  secret: env.KONTRACT_SECRET,
+  sessionTtlSeconds: 3600,
+  allowAnonymous: true,
+  providers: [new AnonymousProvider(), new PasswordProvider(lookupByEmail)],
+};
+```
+
+- **Anonymous login**: instant session, no credentials required
+- **Password login**: email + PBKDF2-hashed password
+- **Account linking**: upgrade anonymous sessions to authenticated accounts
+- **JWT sessions**: HMAC-SHA256 via Web Crypto API (zero dependencies)
+- **Group-based access**: `ugroups` enforced by `@backend(ugroup=...)` and middleware
+- **Auth middleware**: `authMiddleware`, `requireAuth`, `requireGroup`
+
+See the [Authentication guide](/guide/authentication) for endpoints and configuration.
+
+## API Documentation (Cookbook)
+
+Auto-generate API documentation from doc comments:
+
+```ts
+/// Creates a new user account.
+/// Supports **markdown** formatting.
+@backend({ ugroup: 'admin', perm: perms.RWX, egroup: 'api-v1' })
+async function createUser(name: string, email: string): Promise<User> { ... }
+```
+
+The cookbook compiler:
+1. Extracts `///` (Rust-style) and `/** */` (JSDoc) doc comments
+2. Infers parameter types and return types from function signatures
+3. Generates VitePress-compatible markdown pages
+
+See the [Cookbook guide](/guide/cookbook) for syntax and usage.
+
+## Lazy Route Loading
+
+Defers module imports until a route is first called — reduces cold-start latency in serverless environments:
+
+```ts
+import { generateLazyRoutes, LazyRouteEntry } from 'kontract';
+
+const entries: LazyRouteEntry[] = [
+  { name: 'createUser', modulePath: './api/users.js', meta: { egroup: 'api-v1' } },
+];
+
+const code = generateLazyRoutes(entries);
+```
+
+The generated code uses dynamic `import()` with caching: the first call loads the module, subsequent calls use the cached handler.
+
+See the [Lazy Loading guide](/guide/lazy-loading) for details.
+
 ## Automatic Migrations
 
 Safe schema changes are handled automatically:
