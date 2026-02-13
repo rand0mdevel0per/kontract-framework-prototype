@@ -15,6 +15,29 @@ Kontract is a serverless full-stack TypeScript framework that enables end-to-end
 
 ## Quick Start
 
+Create a new Kontract project:
+
+```bash
+# Linux / macOS
+bash <(curl -fsSL https://raw.githubusercontent.com/rand0mdevel0per/kontract/main/init.sh) my-app
+
+# Windows PowerShell
+irm https://raw.githubusercontent.com/rand0mdevel0per/kontract/main/init.ps1 | iex
+```
+
+Or manually:
+
+```bash
+cd my-app
+npm install
+wrangler secret put DATABASE_URL
+wrangler secret put KONTRACT_SECRET
+npm run dev      # http://localhost:8787
+npm run deploy   # deploy to Cloudflare Workers
+```
+
+### Development (this repo)
+
 ```bash
 npm install
 npm run lint
@@ -34,7 +57,8 @@ src/
   events/      SSE formatting, EventBus
   security/    permission constants and verification
   cli/         migration helpers
-test/          unit tests (57 tests, 96%+ coverage)
+demo/          example Cloudflare Workers app
+test/          unit tests (58 tests, 96%+ coverage)
 docs/          VitePress documentation site
 specs/         framework specification
 ```

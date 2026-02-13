@@ -16,7 +16,8 @@ export default defineConfig({
     sidebar: {
       '/guide/': [
         { text: 'Overview', link: '/guide/overview' },
-        { text: 'Quickstart', link: '/guide/quickstart' }
+        { text: 'Quickstart', link: '/guide/quickstart' },
+        { text: 'Deployment', link: '/guide/deployment' }
       ],
       '/architecture/': [
         { text: 'Runtime', link: '/architecture/runtime' },
