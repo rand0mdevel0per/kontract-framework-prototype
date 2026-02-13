@@ -43,8 +43,9 @@ export class AnonymousProvider implements AuthProvider {
   name = 'anonymous';
 
   async authenticate(
-    _credentials: Record<string, string>
+    credentials: Record<string, string>
   ): Promise<{ owner: string; user: Partial<AuthUser> }> {
+    void credentials;
     const owner = `anon_${generateId()}`;
     return {
       owner,

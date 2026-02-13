@@ -8,6 +8,8 @@ export * from './events/sse';
 export * from './compiler/backend';
 export * from './compiler/cache';
 export * from './compiler/storage-registry';
+export * from './compiler/cookbook';
+export * from './compiler/lazy';
 export * from './middleware/inline';
 export * from './cli/migrate';
 export * from './auth/types';
