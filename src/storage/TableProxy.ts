@@ -11,6 +11,8 @@ export interface Context {
   path?: string;
   headers?: Record<string, string>;
   route?: { name: string; egroup?: string };
+  isAnonymous?: boolean;
+  ugroups?: string[];
 }
 
 function sanitizeIdentifier(name: string): string {
