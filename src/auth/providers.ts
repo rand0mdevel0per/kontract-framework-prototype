@@ -6,15 +6,16 @@ function generateId(): string {
 }
 
 async function hashPassword(password: string, salt: Uint8Array): Promise<string> {
+  const saltBuf = salt.buffer.slice(salt.byteOffset, salt.byteOffset + salt.byteLength) as ArrayBuffer;
   const key = await crypto.subtle.importKey(
     'raw',
-    new TextEncoder().encode(password),
+    new TextEncoder().encode(password).buffer as ArrayBuffer,
     'PBKDF2',
     false,
     ['deriveBits']
   );
   const derived = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt: saltBuf, iterations: 100000, hash: 'SHA-256' },
     key,
     256
   );
@@ -41,7 +42,9 @@ export async function verifyPasswordHash(password: string, stored: string): Prom
 export class AnonymousProvider implements AuthProvider {
   name = 'anonymous';
 
-  async authenticate(): Promise<{ owner: string; user: Partial<AuthUser> }> {
+  async authenticate(
+    _credentials: Record<string, string>
+  ): Promise<{ owner: string; user: Partial<AuthUser> }> {
     const owner = `anon_${generateId()}`;
     return {
       owner,

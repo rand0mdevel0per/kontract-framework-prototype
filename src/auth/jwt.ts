@@ -11,6 +11,10 @@ function base64UrlDecode(str: string): Uint8Array {
   return Uint8Array.from(binStr, (c) => c.charCodeAt(0));
 }
 
+function toBuffer(data: Uint8Array): ArrayBuffer {
+  return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+}
+
 function textEncode(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
@@ -25,12 +29,12 @@ async function hmacSign(
 ): Promise<Uint8Array> {
   const key = await crypto.subtle.importKey(
     'raw',
-    textEncode(secret),
+    toBuffer(textEncode(secret)),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
   );
-  const sig = await crypto.subtle.sign('HMAC', key, textEncode(data));
+  const sig = await crypto.subtle.sign('HMAC', key, toBuffer(textEncode(data)));
   return new Uint8Array(sig);
 }
 
@@ -41,12 +45,12 @@ async function hmacVerify(
 ): Promise<boolean> {
   const key = await crypto.subtle.importKey(
     'raw',
-    textEncode(secret),
+    toBuffer(textEncode(secret)),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['verify']
   );
-  return crypto.subtle.verify('HMAC', key, signature, textEncode(data));
+  return crypto.subtle.verify('HMAC', key, toBuffer(signature), toBuffer(textEncode(data)));
 }
 
 export async function signJwt(
