@@ -191,6 +191,48 @@ const code = generateLazyRoutes(entries);
 
 See the [Lazy Loading guide](/guide/lazy-loading) for when to use lazy vs eager loading.
 
+## SWC Optimization (Phase 4)
+
+After middleware inlining and lazy route generation, the compiled output passes through SWC for optimization. The spec defines "O3 passes" — 3 iterations of the following transforms:
+
+| Pass | Description |
+|------|-------------|
+| Dead code elimination | Removes unreachable branches (`if (false) { ... }`) and unused variables |
+| Constant folding | Evaluates compile-time expressions (`2 + 3` → `5`) |
+| Function inlining | Inlines small functions at call sites (threshold: ~50 AST nodes) |
+| Variable reduction | Collapses intermediate variables into their usage sites |
+| Expression simplification | Merges and simplifies chained expressions |
+
+```ts
+import { optimize } from 'kontract';
+
+const optimized = await optimize(serverBundle, {
+  dce: true,
+  constantFolding: true,
+  inlineLevel: 2,
+  reduceVars: true,
+  simplify: true,
+  passes: 3,        // O3
+  mangle: false,     // keep names readable
+});
+```
+
+Example from the spec — a permission check that is known at compile time:
+
+```ts
+// Before
+const canWrite = ctx.perm & 0b010;  // Known to be 0b100 at compile-time
+if (canWrite) {
+  await deleteOperation();
+}
+
+// After SWC O3 (optimized out entirely, since 0b100 & 0b010 === 0)
+```
+
+`mangle: false` is the default so generated code stays debuggable. Enable `mangle: true` for production bundles when size matters.
+
+Requires `@swc/core` as a dependency (`npm install -D @swc/core`).
+
 ## StorageRegistry Generation
 
 The compiler uses the TypeScript Compiler API to extract interface definitions and generate typed storage access:

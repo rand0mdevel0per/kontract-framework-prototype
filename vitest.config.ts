@@ -6,6 +6,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       include: ['src/**'],
+      exclude: ['src/cli/bin.ts'],
       thresholds: {
         lines: 90,
         statements: 90,

@@ -1,28 +1,59 @@
 {
-  "name": "kontract",
+  "name": "@rand0mdevel0per/kontract",
   "version": "0.1.0",
-  "private": true,
   "description": "Serverless full-stack TypeScript framework with minimal database privileges",
   "license": "MIT",
   "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "bin": {
+    "kontract": "dist/src/cli/bin.js"
+  },
+  "files": [
+    "dist/src",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rand0mdevel0per/kontract.git"
+  },
+  "homepage": "https://github.com/rand0mdevel0per/kontract#readme",
+  "keywords": [
+    "serverless",
+    "typescript",
+    "cloudflare-workers",
+    "full-stack",
+    "framework",
+    "postgresql",
+    "e2e-encryption"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint . --ext .ts",
     "test": "vitest --coverage --run",
+    "prepublishOnly": "npm run build",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "@typescript-eslint/eslint-plugin": "^7.0.1",
-    "@typescript-eslint/parser": "^7.0.1",
     "@babel/parser": "^7.26.3",
     "@babel/traverse": "^7.26.3",
     "@babel/types": "^7.26.3",
-    "@vitest/coverage-v8": "^1.6.1",
+    "@swc/core": "^1.15.11",
     "@types/babel__traverse": "^7.20.5",
+    "@types/node": "^20.11.17",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "@vitest/coverage-v8": "^1.6.1",
     "c8": "^9.1.0",
     "eslint": "^8.57.0",
     "typescript": "^5.4.0",

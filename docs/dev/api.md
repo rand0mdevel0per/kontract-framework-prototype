@@ -425,3 +425,127 @@ function generateLazyRoutes(entries: LazyRouteEntry[]): string;
 ```
 
 Generates code containing `__kontract_loaders` (Map of lazy import functions), `__kontract_routes` (Map of cached handlers), and `__kontract_resolve(name)` (async resolver with caching).
+
+## SWC Optimization
+
+### Options
+
+```ts
+interface SwcOptimizeOptions {
+  dce?: boolean;              // Dead code elimination (default: true)
+  constantFolding?: boolean;  // Constant folding and propagation (default: true)
+  inlineLevel?: 0 | 1 | 2 | 3; // Function inlining level (default: 2)
+  reduceVars?: boolean;       // Variable reduction (default: true)
+  simplify?: boolean;         // Expression simplification (default: true)
+  passes?: number;            // Number of optimization passes (default: 3)
+  mangle?: boolean;           // Mangle variable names (default: false)
+}
+```
+
+### Functions
+
+```ts
+function optimize(code: string, options?: SwcOptimizeOptions): Promise<string>;
+function optimizePassthrough(code: string): Promise<string>;
+```
+
+| Function | Description |
+|----------|-------------|
+| `optimize` | Run SWC O3 optimization passes (DCE, constant folding, inlining, variable reduction, expression simplification) |
+| `optimizePassthrough` | Run with all passes disabled. Useful as a benchmark baseline |
+
+Requires `@swc/core` as a peer dependency.
+
+## FlatBuffers Schema Generation
+
+### Types
+
+```ts
+interface FBSField { name: string; type: string; annotation?: string; }
+interface FBSTable { name: string; fields: FBSField[]; }
+interface FBSSchema { namespace?: string; tables: FBSTable[]; rootType?: string; }
+```
+
+### Functions
+
+```ts
+function mapTsTypeToFBS(tsType: string, annotation?: string): string;
+function generateFBSTable(table: FBSTable): string;
+function generateFBSSchema(schema: FBSSchema): string;
+function fieldsFromRecord(record: Record<string, string>, annotations?: Record<string, string>): FBSField[];
+function generateRPCSchema(functions: Array<{name, params, returnType}>, namespace?: string): FBSSchema;
+```
+
+| Function | Description |
+|----------|-------------|
+| `mapTsTypeToFBS` | Map a TypeScript type string to FlatBuffers type. Respects `@int32`, `@float32`, etc. annotation overrides |
+| `generateFBSTable` | Generate a single FlatBuffers `table` declaration |
+| `generateFBSSchema` | Generate a complete `.fbs` schema with optional namespace and root_type |
+| `fieldsFromRecord` | Convert a `{ fieldName: tsType }` record to `FBSField[]` |
+| `generateRPCSchema` | Generate Request/Response table pairs for a set of `@backend` functions |
+
+### Type Mapping
+
+| TypeScript | FlatBuffers | Override Annotation |
+|-----------|-------------|---------------------|
+| `string` | `string` | — |
+| `number` | `double` | `@int8`, `@int16`, `@int32`, `@float32` |
+| `boolean` | `bool` | — |
+| `bigint` | `int64` | — |
+| `Date` | `int64` | — |
+| `Uint8Array` | `[ubyte]` | — |
+| `T[]` | `[T]` | — |
+| `CustomType` | `CustomType` (table ref) | — |
+
+## PostgreSQL Webhooks
+
+### DDL Generation
+
+```ts
+function generateNotifyFunction(gatewayUrl: string): string;
+function generateTriggerDDL(tableName: string): string;
+function generateCleanupFunction(): string;
+```
+
+| Function | Description |
+|----------|-------------|
+| `generateNotifyFunction` | PL/pgSQL function that POSTs row changes to the gateway webhook endpoint |
+| `generateTriggerDDL` | Per-table AFTER trigger that calls the notify function. Sanitizes table name |
+| `generateCleanupFunction` | MVCC garbage collection function that removes old versions |
+
+### Event Types
+
+```ts
+interface WebhookEvent {
+  table: string;
+  operation: 'INSERT' | 'UPDATE' | 'DELETE';
+  new: Record<string, unknown> | null;
+  old: Record<string, unknown> | null;
+}
+
+interface WebhookChangeEvent {
+  type: 'insert' | 'update' | 'delete';
+  table: string;
+  id: string | null;
+  data: Record<string, unknown> | null;
+  oldData: Record<string, unknown> | null;
+}
+
+function parseWebhookEvent(event: WebhookEvent): WebhookChangeEvent;
+```
+
+### SubscriptionRegistry
+
+```ts
+class SubscriptionRegistry {
+  subscribe(id: string, tables: string[], emit: (event: WebhookChangeEvent) => void): () => void;
+  dispatch(event: WebhookChangeEvent): number;
+  getSubscriberCount(table?: string): number;
+}
+```
+
+| Method | Description |
+|--------|-------------|
+| `subscribe` | Register a subscriber for one or more tables. Returns an unsubscribe function |
+| `dispatch` | Push a change event to all matching subscribers. Returns count of notified subscribers |
+| `getSubscriberCount` | Count subscribers, optionally filtered by table name |
